@@ -18,8 +18,20 @@ const Cards = () => {
   }, []);
 
   const addToCart = (products) => {
-    const newItems = [...items, products];
-    setItems(newItems);
+    let newCart = []
+    // const newItems = [...items, products];
+    //if product doesn't exist in the cart the set the quantity of the cart is 1
+    // if exist update quantity by 1
+    const exists = items.find(product => product.id === products.id)
+    if(!exists){
+      products.quantity = 1
+      newCart = [...items, products]
+    } else {
+      exists.quantity = exists.quantity + 1
+      const remaining = items.filter(product => product.id !== products.id)
+      newCart = [...remaining, exists]
+    }
+    setItems(newCart);
     addToDb(products.id);
   };
 
@@ -41,7 +53,11 @@ const Cards = () => {
     //step 5: set the cart
     setItems(savedCart)
   }, [cards]);
-  // console.log(items);
+   // clear cart 
+   const clearCart = () => {
+    localStorage.removeItem('shopping-cart')
+    setItems([])
+  }
 
   return (
     <div className="row">
@@ -88,7 +104,7 @@ const Cards = () => {
       <div className="col-md-4">
         <div className="mt-4 bg-warning px-4 py-5 text-white rounded">
           <h4>Order Summery</h4>
-          <Order items={items}></Order>
+          <Order items={items} clearCart={clearCart}></Order>
         </div>
       </div>
     </div>
